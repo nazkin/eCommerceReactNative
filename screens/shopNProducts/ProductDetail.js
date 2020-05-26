@@ -1,8 +1,9 @@
 import React from 'react'
 import { View, Text, StyleSheet, Image, Button } from 'react-native'
 
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
 import colors from '../../constants/colors'
+import * as cartActions from '../reduxStore/actions/cartActions'
 /**
 * @author
 * @function ProductDetail
@@ -10,7 +11,7 @@ import colors from '../../constants/colors'
 const ProductDetail = (props) => {
     const ID = props.navigation.getParam('productID');
     const productInfo = useSelector(state => state.products.allProducts.find(item => item.id === ID))
-
+    const dispatch = useDispatch();
  return(
   <View style={styles.container}>
       <Image style={styles.image} source={{uri: productInfo.imageURL}}/> 
@@ -20,7 +21,11 @@ const ProductDetail = (props) => {
         <Text style={styles.cost}>CAD$ {productInfo.price}</Text>
     </View>
     <Text style={styles.desc}>{productInfo.description}</Text>
-    <Button title="Add to Cart" />
+    <Button title="Add to Cart"
+      onPress={()=> {
+        return dispatch(cartActions.addToCart(productInfo))
+      }}
+    />
   </View>
   )
 }

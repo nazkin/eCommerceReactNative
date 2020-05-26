@@ -1,15 +1,18 @@
 import React from 'react'
 import { View, Text, StyleSheet, FlatList } from 'react-native'
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
+import {HeaderButtons, Item} from 'react-navigation-header-buttons'
 
 import ProductItem from '../../components/productRelated/ProductItem'
-
+import * as cartActions from '../reduxStore/actions/cartActions'
+import HeaderBtn from '../../components/UI/HeaderBtn'
 
 const ProductList = (props) => {
 
     const productList = useSelector(state =>{
-        return state.products.allProducts
-    })
+        return state.products.allProducts;
+    });
+    const dispatch = useDispatch();
 
     const renderProductListHandler = (itemData)=> {
         return(
@@ -17,12 +20,14 @@ const ProductList = (props) => {
            image={itemData.item.imageURL}
             title={itemData.item.title}
              price={itemData.item.price}
-              onAddToCart={()=> {}}
+              onAddToCart={()=> {
+                dispatch(cartActions.addToCart(itemData.item));
+              }}
                onViewProduct={()=> {
                  props.navigation.navigate('ProductOverview', {
                    productID: itemData.item.id, 
                    productTitle: itemData.item.title
-                 })
+                 });
                }}
           />
             
@@ -35,7 +40,30 @@ const ProductList = (props) => {
  
   )
 }
-
+ProductList['navigationOptions'] = (paramData)=> {
+  return {
+      title: 'Search Products',
+      headerRight: () => {
+         return (<HeaderButtons HeaderButtonComponent={HeaderBtn}>
+                  <Item title="Shopping Cart" iconName="ios-cart"
+                    onPress={()=> {
+                      paramData.navigation.navigate('Cart')
+                    }}
+                  />
+                </HeaderButtons>)
+      },
+      headerLeft: () => {
+        return (<HeaderButtons HeaderButtonComponent={HeaderBtn}>
+                 <Item title="Menu" iconName="ios-menu"
+                   onPress={()=> {
+                     paramData.navigation.toggleDrawer()
+                   }}
+                 />
+               </HeaderButtons>)
+     },
+     
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

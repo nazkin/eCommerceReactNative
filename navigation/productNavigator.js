@@ -10,6 +10,8 @@ import ProductListScreen from '../screens/shopNProducts/ProductList';
 import ProductDetails from '../screens/shopNProducts/ProductDetail';
 import CartScreen from '../screens/shopNProducts/Cart';
 import OrderScreen from '../screens/shopNProducts/OrderScreen';
+import UserProducts from '../screens/users/UsersProducts';
+import EditProducts from '../screens/users/EditProducts';
 
 const defaultNavStyles = {
         headerStyle:{
@@ -41,10 +43,22 @@ const OrderStackNav = createStackNavigator({
     },
     defaultNavigationOptions: defaultNavStyles
 });
+const UserStackNav = createStackNavigator({
+    User: UserProducts,
+    Edit: EditProducts
+},{
+    navigationOptions:{
+        drawerIcon: config => {
+            return <Ionicons name="ios-contact" size={25} color={config.tintColor}/>
+        }
+    },
+    defaultNavigationOptions: defaultNavStyles
+});
 
 const ShopDrawerNav = createDrawerNavigator({
     Shop: ProductStackNav,
-    Orders: OrderStackNav
+    Orders: OrderStackNav,
+    User: UserStackNav
 },{
     contentOptions: {
         activeTintColor: colors.accentOrange

@@ -4,6 +4,18 @@ import colors from '../../constants/colors';
 
 const ProductItem = (props) => {
 
+  let buttons;
+  if(props.userScreen){
+    buttons = <View style={styles.btnRow}>
+                <Button  title="Edit" onPress={props.onEdit}/>
+                <Button  color={colors.accentOrange} title="Delete" onPress={props.onDelete}/>
+              </View>
+  }else{
+    buttons = <View style={styles.btnRow}>
+                <Button  title="Add to Cart" onPress={props.onAddToCart}/>
+                <Button  color={colors.accentOrange}title="View Details" onPress={props.onViewProduct}/>
+              </View>
+  }
 
  return(
   <View style={styles.container}>
@@ -11,13 +23,14 @@ const ProductItem = (props) => {
         <Text style={styles.pTitle}>{props.title}</Text>
         <Text style={styles.pPrice}>${props.price.toFixed(2)}</Text>
     </View>
-    <TouchableOpacity style={styles.img} onPress={props.onViewProduct}>
+    <TouchableOpacity style={styles.img} onPress={props.userScreen ? props.onEdit:props.onViewProduct}>
         <ImageBackground style={{width: '100%', height: '100%'}} source={{uri: props.image }}/>    
     </TouchableOpacity>
-    <View style={styles.btnRow}>
+    {/* <View style={styles.btnRow}>
         <Button  title="Add to Cart" onPress={props.onAddToCart}/>
         <Button  color={colors.accentOrange}title="View Details" onPress={props.onViewProduct}/>
-    </View>
+    </View> */}
+    {buttons}
   </View>
   )
 }

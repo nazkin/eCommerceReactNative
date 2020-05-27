@@ -2,10 +2,10 @@ import React from 'react'
 import { View, Text, StyleSheet, FlatList } from 'react-native'
 import {useSelector, useDispatch} from 'react-redux'
 import {HeaderButtons, Item} from 'react-navigation-header-buttons'
-
+import HeaderBtn from '../../components/UI/HeaderBtn'
 import ProductItem from '../../components/productRelated/ProductItem'
 import * as cartActions from '../reduxStore/actions/cartActions'
-import HeaderBtn from '../../components/UI/HeaderBtn'
+
 
 const ProductList = (props) => {
 
@@ -17,12 +17,18 @@ const ProductList = (props) => {
     const renderProductListHandler = (itemData)=> {
         return(
           <ProductItem
-           image={itemData.item.imageURL}
-            title={itemData.item.title}
-             price={itemData.item.price}
-              onAddToCart={()=> {
-                dispatch(cartActions.addToCart(itemData.item));
-              }}
+          // *****not used in this screen *****
+          onEdit={()=>{}}
+          onDelete={()=> {}}
+           // *****not used in this screen *****
+                userScreen={false}
+                image={itemData.item.imageURL}
+                title={itemData.item.title}
+                price={itemData.item.price}
+
+                onAddToCart={()=> {
+                  dispatch(cartActions.addToCart(itemData.item));
+                }}
                onViewProduct={()=> {
                  props.navigation.navigate('ProductOverview', {
                    productID: itemData.item.id, 

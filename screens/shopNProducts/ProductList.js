@@ -1,18 +1,29 @@
-import React from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native'
+import React, {useEffect, useState} from 'react'
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native'
 import {useSelector, useDispatch} from 'react-redux'
 import {HeaderButtons, Item} from 'react-navigation-header-buttons'
 import HeaderBtn from '../../components/UI/HeaderBtn'
 import ProductItem from '../../components/productRelated/ProductItem'
 import * as cartActions from '../reduxStore/actions/cartActions'
+import * as productActions from '../reduxStore/actions/productActions'
 
 
 const ProductList = (props) => {
-
+    const [loading, setLoading] = useState(false);
     const productList = useSelector(state =>{
         return state.products.allProducts;
     });
     const dispatch = useDispatch();
+
+    useEffect(()=> {
+      const loadData = async ()=> {
+        setLoading(true);
+        await dispatch(productActions.fetchProducts());
+        setLoading(false);
+      }
+      loadData();
+        
+    }, [dispatch])
 
     const renderProductListHandler = (itemData)=> {
         return(
@@ -39,12 +50,26 @@ const ProductList = (props) => {
             
         )
     }
+    if(loading){
+      return (
+          <View style={styles.container}>
+            <ActivityIndicator size="large" color="cyan"/>
+          </View>
+      )
+    } else if(!loading && productList.length === 0){
+      return (
+          <View style={styles.container}>
+            <Text>No users or products are found. Welcom ;)</Text>
+          </View>
+      ) 
 
- return(
+    } else{
+        return <FlatList data={productList} keyExtractor={item=> item.id} renderItem={renderProductListHandler}/>
+    }
+
+      
  
-    <FlatList data={productList} keyExtractor={item=> item.id} renderItem={renderProductListHandler}/>
- 
-  )
+  
 }
 ProductList['navigationOptions'] = (paramData)=> {
   return {

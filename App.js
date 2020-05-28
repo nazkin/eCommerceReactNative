@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {createStore, combineReducers } from 'redux';
+import {createStore, combineReducers, applyMiddleware } from 'redux';
 import {Provider} from 'react-redux';
-
+import ReduxThunk from 'redux-thunk';
 import ProductNavigator from './navigation/productNavigator';
 
 import productReducer from './screens/reduxStore/reducers/productReducers';
@@ -15,7 +14,7 @@ const rootReducer = combineReducers({
   orders: orderReducer
 });
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 export default function App() {
   return (
@@ -26,11 +25,3 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

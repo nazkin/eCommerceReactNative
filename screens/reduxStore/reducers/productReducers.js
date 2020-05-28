@@ -16,7 +16,7 @@ const productReducer = (state = initialState, action) => {
                 allProducts: state.allProducts.filter(product => product.id !== action.productId)
             }
         case CREATE_PRODUCT:
-            const createdProduct = new Product(new Date().toString(), 'u1', action.data.title, action.data.image, action.data.desc, action.data.price)
+            const createdProduct = new Product(new Date().toString(), 'u1', action.data.title, action.data.image, action.data.desc, +action.data.price)
             return {
                 ...state,
                 allProducts: state.allProducts.concat(createdProduct),

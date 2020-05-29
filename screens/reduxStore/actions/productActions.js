@@ -13,7 +13,7 @@ export const fetchProducts = ()=> {
             const res = await fetch(urls.productsURL);
 
             if(!res.ok){
-                throw new Error('Something went wrong went fetching products from the server');
+                throw new Error('Something went wrong when fetching products from the server');
             }
             const resData = await res.json();
             const storedProducts = [];
@@ -41,66 +41,80 @@ export const fetchProducts = ()=> {
 
 export const deleteProduct = (id) => {
     return async dispatch=> {
-        await fetch(urls.mainURL+`/products/${id}.json`, {
-            method: 'DELETE',
-        });
-        dispatch({type: DELETE_PRODUCT, productId: id});
+        try{
+            await fetch(urls.mainURL+`/products/${id}.json`, {
+                method: 'DELETE',
+            });
+            dispatch({type: DELETE_PRODUCT, productId: id});
+        }catch(err){
+            throw err;
+        }
+
     }
      
 }
 export const createProduct = (title, image, price, desc)=> {
     return async dispatch => {
         //send an async request to database
-        const res = await fetch(urls.productsURL, {
-            method: 'POST',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title,
-                image,
-                price,
-                desc
-            })
-        });
-        const resData = await res.json();
-        
-        dispatch({
-            type: CREATE_PRODUCT,
-            data: {
-                id: resData.name,
-                title,
-                image,
-                price, 
-                desc
-            }
-        });
+        try{
+            const res = await fetch(urls.productsURL, {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title,
+                    image,
+                    price,
+                    desc
+                })
+            });
+            const resData = await res.json();
+            
+            dispatch({
+                type: CREATE_PRODUCT,
+                data: {
+                    id: resData.name,
+                    title,
+                    image,
+                    price, 
+                    desc
+                }
+            });
+        }catch(err){
+            throw err;
+        }
+
     };
 };
 export const updateProduct = (id, title, image, desc)=> {
     return async dispatch=> {
-        const res = await fetch(urls.mainURL+`/products/${id}.json`, {
-            method: 'PATCH',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title,
-                image,
-                desc
-            })
-        });
-        console.log(res);
-
-        dispatch({
-            type: UPDATE_PRODUCT,
-            prodID: id,
-            data: {
-                title,
-                image,
-                desc
-            }
-        });
+        try{
+            const res = await fetch(urls.mainURL+`/products/${id}.json`, {
+                method: 'PATCH',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title,
+                    image,
+                    desc
+                })
+            });
+            const resData = await res.json();
+            
+            dispatch({
+                type: UPDATE_PRODUCT,
+                data: {
+                    id: resData.name,
+                    title,
+                    image, 
+                    desc
+                }
+            });
+        }catch(err){
+            throw err;
+        }
     }
 
 }

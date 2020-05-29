@@ -39,27 +39,33 @@ export const fetchOrders = ()=> {
 export const addOrder = (cartItems, totalCost) => {
     const createdAt = new Date();
     return async dispatch=> {
-        const res = await fetch(urls.mainURL+'/orders.json', {
-            method: 'POST',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              cartItems,
-              totalCost,
-              date: createdAt.toISOString()
-            })
-        });
-        const resData = await res.json();
-        dispatch({
-            type: ADD_ORDER,
-            orderData: {
-                id: resData.name,
-                items: cartItems,
-                cost: totalCost,
-                date: createdAt
-            }
-        });
+        try{
+            const res = await fetch(urls.mainURL+'/orders.json', {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  cartItems,
+                  totalCost,
+                  date: createdAt.toISOString()
+                })
+            });
+            const resData = await res.json();
+            dispatch({
+                type: ADD_ORDER,
+                orderData: {
+                    id: resData.name,
+                    items: cartItems,
+                    cost: totalCost,
+                    date: createdAt
+                }
+            });
+
+        } catch(err){
+            throw(err);
+        }
+
     }
 
 }

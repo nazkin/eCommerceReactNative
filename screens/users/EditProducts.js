@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import { View, Text,TextInput, ScrollView, StyleSheet, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, Alert} from 'react-native';
+import {ActivityIndicator, View, Text,TextInput, ScrollView, StyleSheet, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, Alert} from 'react-native';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 import {useSelector, useDispatch} from 'react-redux';
 
@@ -17,9 +17,13 @@ const EditProduct = (props) => {
   const [image, setImage] = useState(pID ? productObject.imageURL : "");
   const [price, setPrice] = useState(pID ? productObject.price : "");
   const [desc, setDesc] = useState(pID ? productObject.description : "");
+
+  const [loading, setLoading] = useState(false);
   
   const submitFormHandler = useCallback(() => {
+    setLoading(true);
     if(title === "" || image === ""|| desc === ""|| price === ""){
+      setLoading(false);
       Alert.alert(
         "Incorrectly entered information",
         "A mandary field was left empty",
@@ -32,6 +36,7 @@ const EditProduct = (props) => {
       )
       return;
     }else if(price < 0.01){
+      setLoading(false);
       Alert.alert(
         "Incorrectly entered information",
         "Products price has not been entered correctly",
@@ -46,9 +51,9 @@ const EditProduct = (props) => {
     }
 
     if(pID){
-      dispatch(productActions.updateProduct(pID, title, image,desc));
+      dispatch(productActions.updateProduct(pID, title, image,desc)).then(()=> setLoading(false));
     }else{
-      dispatch(productActions.createProduct(title, image,price,desc));
+      dispatch(productActions.createProduct(title, image,price,desc)).then(()=> setLoading(false));
     }
     props.navigation.goBack();
   }, [dispatch, title, image, price, desc]);
@@ -57,7 +62,11 @@ const EditProduct = (props) => {
     props.navigation.setParams({'submit': submitFormHandler});
   }, [submitFormHandler]);
  
-
+  if(loading){
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="cyan"/>
+    </View>
+  }
  return(
    <KeyboardAvoidingView
       behavior="height"
@@ -125,6 +134,11 @@ EditProduct['navigationOptions'] = (paramData)=> {
   }
 }
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+   },
   kav:{
     flex: 1
   },

@@ -1,5 +1,5 @@
 import React from 'react'
-import {createAppContainer} from 'react-navigation';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 // import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createDrawerNavigator } from 'react-navigation-drawer';
@@ -12,6 +12,7 @@ import CartScreen from '../screens/shopNProducts/Cart';
 import OrderScreen from '../screens/shopNProducts/OrderScreen';
 import UserProducts from '../screens/users/UsersProducts';
 import EditProducts from '../screens/users/EditProducts';
+import AuthenticationScreen from '../screens/users/Auth';
 
 const defaultNavStyles = {
         headerStyle:{
@@ -63,6 +64,13 @@ const ShopDrawerNav = createDrawerNavigator({
     contentOptions: {
         activeTintColor: colors.accentOrange
     }
+});
+const AuthStackNav = createStackNavigator({
+    Authentication: AuthenticationScreen, 
+})
+const MainNavigator = createSwitchNavigator({
+    Auth: AuthStackNav,
+    Shop: ShopDrawerNav
 })
 
-export default createAppContainer(ShopDrawerNav);
+export default createAppContainer(MainNavigator);

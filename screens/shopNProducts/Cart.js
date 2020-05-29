@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, FlatList, Button } from 'react-native'
+import React, {useState, useCallback} from 'react'
+import { View, Text, StyleSheet, FlatList, Button, ActivityIndicator } from 'react-native'
 import {useSelector, useDispatch} from 'react-redux'
 
 import * as cartActions from '../reduxStore/actions/cartActions'
@@ -11,7 +11,8 @@ import CartItem from '../../components/productRelated/cartItem'
 * @function CartScreen
 **/
 const CartScreen = (props) => {
-
+  const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
   const totalPurchaseAmount = useSelector(state => state.cart.sum);
 
   const itemsInCart = useSelector(state=> {
@@ -29,6 +30,34 @@ const CartScreen = (props) => {
   });
     
   const dispatch = useDispatch();
+
+
+  const addOrderHandler = useCallback((item, amount)=> {
+    setLoading(true);
+    setIsError(null);
+    try{
+      dispatch(orderActions.addOrder(item, amount)).then(()=> setLoading(false));
+    } catch(err){
+      setIsError(true);
+    }
+   
+  }, [dispatch]);
+  
+if(loading){
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="cyan"/>
+    </View>
+  )
+}else if(isError){
+  Alert.alert("Error placing an order", "Would you like to try again", [
+    {
+      text: "Okay",
+      onPress: ()=> setIsError(null)
+    }
+  ])
+}
+
  return(
   <View style={styles.container}>
     <FlatList
@@ -53,9 +82,7 @@ const CartScreen = (props) => {
     <Button
       title="Place Order"
       disabled={itemsInCart.length === 0}
-      onPress={()=> {
-        dispatch(orderActions.addOrder(itemsInCart, totalPurchaseAmount))
-      }}
+      onPress={()=> addOrderHandler(itemsInCart, totalPurchaseAmount)}
      />
   </View>
   )

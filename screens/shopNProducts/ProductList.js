@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native'
+import React, {useEffect, useState, useCallback} from 'react'
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button } from 'react-native'
 import {useSelector, useDispatch} from 'react-redux'
 import {HeaderButtons, Item} from 'react-navigation-header-buttons'
 import HeaderBtn from '../../components/UI/HeaderBtn'
@@ -10,20 +10,32 @@ import * as productActions from '../reduxStore/actions/productActions'
 
 const ProductList = (props) => {
     const [loading, setLoading] = useState(false);
+    const [fetchError, setFetchError] = useState(null)
     const productList = useSelector(state =>{
         return state.products.allProducts;
     });
     const dispatch = useDispatch();
 
+    const loadData = useCallback(async ()=> {
+      setFetchError(null);
+      setLoading(true);
+      await dispatch(productActions.fetchProducts());
+      setLoading(false);
+    }, [dispatch, setLoading, setFetchError])
+
     useEffect(()=> {
-      const loadData = async ()=> {
-        setLoading(true);
-        await dispatch(productActions.fetchProducts());
-        setLoading(false);
-      }
-      loadData();
-        
-    }, [dispatch])
+      try{
+        loadData();
+      } catch(err){
+        setFetchError(err.message);
+      }  
+    }, [dispatch, loadData]);
+
+    useEffect(()=> {
+      const willFocusCall = props.navigation.addListener('willFocus', loadData);
+
+      return ()=> willFocusCall.remove();
+    }, [loadData]);
 
     const renderProductListHandler = (itemData)=> {
         return(
@@ -49,6 +61,15 @@ const ProductList = (props) => {
           />
             
         )
+    }
+    if(fetchError){
+      return (
+      <View style={styles.container}>
+        <Text>There was an error when fetching the product</Text>
+        <Text>{fetchError}</Text>
+        <Button title="Try Again" onPress={loadData} />
+      </View>
+      )
     }
     if(loading){
       return (

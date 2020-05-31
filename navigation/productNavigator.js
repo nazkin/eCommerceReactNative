@@ -2,9 +2,9 @@ import React from 'react'
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 // import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { createDrawerNavigator } from 'react-navigation-drawer';
+import { createDrawerNavigator, DrawerNavigatorItems } from 'react-navigation-drawer';
 import {Ionicons} from '@expo/vector-icons';
-
+import {View, Text, SafeAreaView, Button} from 'react-native'
 import colors from '../constants/colors'
 import ProductListScreen from '../screens/shopNProducts/ProductList';
 import ProductDetails from '../screens/shopNProducts/ProductDetail';
@@ -44,6 +44,7 @@ const OrderStackNav = createStackNavigator({
     },
     defaultNavigationOptions: defaultNavStyles
 });
+
 const UserStackNav = createStackNavigator({
     User: UserProducts,
     Edit: EditProducts
@@ -63,14 +64,29 @@ const ShopDrawerNav = createDrawerNavigator({
 },{
     contentOptions: {
         activeTintColor: colors.accentOrange
+    },
+    contentComponent: (props)=> {
+
+        return(
+            <View style={{flex:1, paddingTop: 40}}>
+                <SafeAreaView forceInset={{top: 'always',horizontal: 'never'}}>
+                    <DrawerNavigatorItems {...props}/>
+                    <Button title="Logout" color = {colors.accentOrange} onPress={()=> {
+                        props.navigation.navigate('Auth');
+                    }}/>
+                </SafeAreaView>
+            </View>
+        ) 
     }
 });
+
 const AuthStackNav = createStackNavigator({
     Authentication: AuthenticationScreen, 
-})
+});
+
 const MainNavigator = createSwitchNavigator({
     Auth: AuthStackNav,
     Shop: ShopDrawerNav
-})
+});
 
 export default createAppContainer(MainNavigator);

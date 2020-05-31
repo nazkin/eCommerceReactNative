@@ -7,10 +7,11 @@ export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
 export const FETCH_PRODUCTS = "FETCH_PRODUCTS";
 
 export const fetchProducts = ()=> {
-    return async dispatch => {
+    return async (dispatch, getState) => {
+        const userID = getState().auth.userID;
         try {
             //send an async request to database
-            const res = await fetch(urls.productsURL);
+            const res = await fetch(urls.mainURL+`/products.json`);
 
             if(!res.ok){
                 throw new Error('Something went wrong when fetching products from the server');
@@ -21,7 +22,7 @@ export const fetchProducts = ()=> {
             for(const key in resData){
                 let product = new Product(
                         key,
-                        'u1',
+                        resData[key].ownerId,
                         resData[key].title,
                         resData[key].image,
                         resData[key].desc,
@@ -30,7 +31,7 @@ export const fetchProducts = ()=> {
                 storedProducts.push(product);
             }
 
-            dispatch({type: FETCH_PRODUCTS, products: storedProducts});
+            dispatch({type: FETCH_PRODUCTS, products: storedProducts, ownerId: userID});
 
         } catch(err){
             throw err;
@@ -40,9 +41,10 @@ export const fetchProducts = ()=> {
 }
 
 export const deleteProduct = (id) => {
-    return async dispatch=> {
+    return async (dispatch, getState)=> {
+        const token = getState().auth.token;
         try{
-            await fetch(urls.mainURL+`/products/${id}.json`, {
+            await fetch(urls.mainURL+`/products/${id}.json?auth=${token}`, {
                 method: 'DELETE',
             });
             dispatch({type: DELETE_PRODUCT, productId: id});
@@ -54,10 +56,12 @@ export const deleteProduct = (id) => {
      
 }
 export const createProduct = (title, image, price, desc)=> {
-    return async dispatch => {
+    return async (dispatch, getState) => {
+        const userID = getState().auth.userID;
+        const token = getState().auth.token;
         //send an async request to database
         try{
-            const res = await fetch(urls.productsURL, {
+            const res = await fetch(urls.mainURL+`/products.json?auth=${token}`, {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -66,7 +70,8 @@ export const createProduct = (title, image, price, desc)=> {
                     title,
                     image,
                     price,
-                    desc
+                    desc,
+                    ownerId: userID
                 })
             });
             const resData = await res.json();
@@ -78,7 +83,8 @@ export const createProduct = (title, image, price, desc)=> {
                     title,
                     image,
                     price, 
-                    desc
+                    desc, 
+                    ownerId: userID
                 }
             });
         }catch(err){
@@ -88,9 +94,11 @@ export const createProduct = (title, image, price, desc)=> {
     };
 };
 export const updateProduct = (id, title, image, desc)=> {
-    return async dispatch=> {
+    
+    return async (dispatch, getState)=> {
+        const token = getState().auth.token;
         try{
-            const res = await fetch(urls.mainURL+`/products/${id}.json`, {
+            const res = await fetch(urls.mainURL+`/products/${id}.json?auth=${token}`, {
                 method: 'PATCH',
                 headers:{
                     'Content-Type': 'application/json'

@@ -4,7 +4,7 @@ import Product from '../../../models/products'
 
 const initialState = {
     allProducts: PRODUCTS,
-    usersProducts: PRODUCTS.filter(product => product.ownerId === 'u1')
+    usersProducts: PRODUCTS.filter(prod=> prod.ownerId === 'u1')
 }
 
 const productReducer = (state = initialState, action) => {
@@ -13,7 +13,7 @@ const productReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allProducts: action.products,
-                usersProducts: action.products.filter(product => product.ownerId === 'u1')
+                usersProducts: action.products.filter(product => product.ownerId === action.ownerId)
             }
         case DELETE_PRODUCT:
             return{
@@ -22,7 +22,7 @@ const productReducer = (state = initialState, action) => {
                 allProducts: state.allProducts.filter(product => product.id !== action.productId)
             }
         case CREATE_PRODUCT:
-            const createdProduct = new Product(action.data.id, 'u1', action.data.title, action.data.image, action.data.desc, +action.data.price)
+            const createdProduct = new Product(action.data.id, action.data.ownerId, action.data.title, action.data.image, action.data.desc, +action.data.price)
             return {
                 ...state,
                 allProducts: state.allProducts.concat(createdProduct),

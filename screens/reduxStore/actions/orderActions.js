@@ -6,10 +6,12 @@ export const FETCH_ORDERS = 'FETCH_ORDERS';
 
 
 export const fetchOrders = ()=> {
-    return async dispatch => {
+    return async (dispatch,getState) => {
+
+        const userID = getState().auth.userID;
         try {
             //send an async request to database
-            const res = await fetch(urls.mainURL+'/orders.json');
+            const res = await fetch(urls.mainURL+`/orders/${userID}.json`);
 
             if(!res.ok){
                 throw new Error('Something went wrong went fetching orders from the server');
@@ -38,9 +40,12 @@ export const fetchOrders = ()=> {
 
 export const addOrder = (cartItems, totalCost) => {
     const createdAt = new Date();
-    return async dispatch=> {
+
+    return async (dispatch, getState)=> {
+        const token = getState().auth.token;
+        const userID = getState().auth.userID;
         try{
-            const res = await fetch(urls.mainURL+'/orders.json', {
+            const res = await fetch(urls.mainURL+`/orders/${userID}.json?auth=${token}`, {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
